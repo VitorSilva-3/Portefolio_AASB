@@ -301,7 +301,8 @@ def obter_orfs(sequencia: str):
     (grupos de 3 nucleotídeos) a partir de três posições iniciais (0, 1, 2), tanto na sequência original quanto na sequência complementar inversa. 
     As ORFs geradas podem representar potenciais regiões de tradução para proteínas.
 
-    @note A função assume que a sequência de DNA fornecida está em letras maiúsculas. A função também lida com a inversão e complemento da cadeia para calcular as ORFs da sequência reversa reversa.
+    @note A função assume que a sequência de DNA fornecida está em letras maiúsculas. A função também lida com a inversão e complemento da cadeia 
+    para calcular as ORFs da sequência reversa reversa.
 
     @code
     // Exemplo de uso:
