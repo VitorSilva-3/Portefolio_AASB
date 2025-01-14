@@ -1,5 +1,4 @@
 from typing import List, Tuple
-import unittest
 
 def alinhamento(seq1: str, seq2: str) -> Tuple[str, str]:
     """!
