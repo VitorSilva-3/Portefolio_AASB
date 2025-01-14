@@ -1,5 +1,5 @@
 
-def validacao_dna(sequencia):
+def validacao_dna(sequencia: str) -> str:
     """
     @brief Verifica se uma sequência fornecida é uma sequência válida de DNA.
 
@@ -34,7 +34,7 @@ def validacao_dna(sequencia):
             return "Não é uma sequência válida de DNA"
     return "É uma sequência válida de DNA"
 
-def contar_bases(sequencia):
+def contar_bases(sequencia: str):
     """
     @brief Conta as ocorrências de cada base nitrogenada (A, C, G, T) em uma sequência de DNA e exibe os resultados.
 
@@ -78,9 +78,9 @@ def contar_bases(sequencia):
     for base, quantidade in bases.items():              #imprimir o número de cada base
         print(f"{base}: {quantidade}")
 
-def frequencia_bases(sequencia):
+def frequencia_bases(sequencia: str):
     """
-    @brief Calcula e exibe a frequência de cada base nitrogenada (A, C, G, T) em uma sequência de DNA.
+    @brief Calcula e exibe a frequência de cada base azotada (A, C, G, T) em uma sequência de DNA.
 
     @details A função percorre a sequência fornecida, converte todos os caracteres para maiúsculas,
              e calcula a frequência de cada base nitrogenada válida ('A', 'C', 'G', 'T').
@@ -132,7 +132,7 @@ def frequencia_bases(sequencia):
         frequencia = quantidade / tamanho if tamanho > 0 else 0
         print(f"{base}: {frequencia:.2f}")
 
-def complemento_inverso(sequencia):
+def complemento_inverso(sequencia: str) -> str:
     """
     @brief Calcula o complemento inverso de uma sequência de DNA.
 
@@ -167,7 +167,7 @@ def complemento_inverso(sequencia):
 
     return ''.join(complementares[base] for base in sequencia_inversa)      #gera o complemento inverso 
 
-def dna_para_rna(sequencia):
+def dna_para_rna(sequencia: str) -> str:
     """
     @brief Converte uma sequência de DNA em uma cadeia de RNA correspondente.
 
@@ -196,7 +196,7 @@ def dna_para_rna(sequencia):
     
     return rna
 
-def dividir_codoes(sequencia):
+def dividir_codoes(sequencia: str) -> list[str]:
     """
     @brief Divide uma sequência de DNA em uma lista de codões.
 
@@ -235,7 +235,7 @@ def dividir_codoes(sequencia):
     
     return codoes
 
-def dna_para_proteina(sequencia):
+def dna_para_proteina(sequencia: str) -> str:
     """
     @brief Converte uma sequência de DNA em uma cadeia de aminoácidos que formam uma proteína.
 
@@ -289,7 +289,7 @@ def dna_para_proteina(sequencia):
 
     return resultado
 
-def obter_orfs(sequencia):
+def obter_orfs(sequencia: str):
     """
     @brief Calcula todas as 6 possíveis Open Reading Frames (ORFs) de uma sequência de DNA.
 
