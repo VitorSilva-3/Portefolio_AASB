@@ -1,3 +1,5 @@
+import unittest
+
 class TestesAlinhamentoSequencias(unittest.TestCase):
     """!
     @brief Classe de testes unitários para as funções de alinhamento de sequências.
