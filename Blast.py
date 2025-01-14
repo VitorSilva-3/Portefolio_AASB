@@ -5,7 +5,7 @@ DEBUG: bool = False
 
 ## @package sequence_analysis
 #  Módulo para análise de sequências biológicas.
-#  Este módulo inclui funções para mapear substrings em uma sequência,
+#  Este módulo inclui funções para mapear substrings numa sequência,
 #  encontrar hits entre sequências e estender alinhamentos.
 
 def query_map(seq: str, window_size: int) -> Dict[str, List[int]]:
@@ -29,10 +29,10 @@ def query_map(seq: str, window_size: int) -> Dict[str, List[int]]:
 
 def get_all_positions(subseq: str, seq: str) -> List[int]:
     """
-    @brief Encontra todas as posições de uma substring em uma sequência.
+    @brief Encontra todas as posições de uma substring numa sequência.
 
     @param subseq Substring a ser encontrada.
-    @param seq Sequência onde buscar.
+    @param seq Sequência onde será feita a busca.
     @return Lista de posições onde a substring ocorre.
     """
     return [i for i in range(len(seq) - len(subseq) + 1) if seq[i:i + len(subseq)] == subseq]
@@ -54,9 +54,9 @@ def hits(qm: Dict[str, List[int]], seq: str) -> List[Tuple[int, int]]:
 
 def extend_hit_direction(query: str, seq: str, hit: Tuple[int, int], window_size: int, direction: int) -> Tuple[int, int, int, int]:
     """
-    @brief Estende um alinhamento em uma direção.
+    @brief Estende um alinhamento numa direção.
 
-    @param query Sequência de query.
+    @param query Sequência da query.
     @param seq Sequência de referência.
     @param hit Tupla com posições iniciais (query, sequência).
     @param window_size Tamanho da janela inicial.
@@ -95,3 +95,4 @@ if __name__ == "__main__":
     for hit in hits_result:
         result = extend_hit_direction(query, seq, hit, window_size, direction=1)
         print("Extensão do hit:", hit, "->", result)
+
