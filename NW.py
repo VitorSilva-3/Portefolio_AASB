@@ -1,144 +1,141 @@
-"""!
-@package sequence_alignment
-@brief Module for sequence alignment using Blosum62 substitution matrix.
-
-This module provides functionality for aligning two sequences using the Blosum62
-substitution matrix and a gap penalty. It includes functions for calculating
-alignment scores, reconstructing alignments, and visualizing the alignment matrix.
-"""
-
-from typing import List, Tuple, Union
+from typing import List, Tuple
 from blosum import Blosum62
-from pprint import pprint
 
-def align(s1: str, s2: str, g: int = -8) -> Tuple[List[List[int]], List[List[str]]]:
+## @package alinhamento_sequencias
+#  @brief Módulo para alinhamento de sequências utilizando a matriz de substituição Blosum62.
+#
+#  Este módulo oferece funcionalidades para alinhar duas sequências utilizando a matriz
+#  de substituição Blosum62 e uma penalização por gaps. Inclui funções para calcular pontuações
+#  de alinhamento, reconstruir alinhamentos e visualizar a matriz de alinhamento.
+
+def alinhar(seq1: str, seq2: str, gap: int = -8) -> Tuple[List[List[int]], List[List[str]]]:
     """!
-    @brief Aligns two sequences using Blosum62 substitution matrix and gap penalty.
+    @brief Alinha duas sequências utilizando a matriz de substituição Blosum62 e uma penalização por gaps.
     
-    @param s1: First sequence to align
-    @param s2: Second sequence to align
-    @param g: Gap penalty (default: -8)
+    @param seq1: Primeira sequência a alinhar.
+    @param seq2: Segunda sequência a alinhar.
+    @param gap: Penalização por gap (valor predefinido: -8).
     
-    @return Tuple containing:
-            - List[List[int]]: Score matrix
-            - List[List[str]]: Traceback matrix
+    @return Tuplo contendo:
+            - List[List[int]]: Matriz de pontuação.
+            - List[List[str]]: Matriz de traceback.
     
-    @exception ValueError If input sequences are empty
+    @exception ValueError Se as sequências de entrada forem vazias.
     
-    @details The function uses dynamic programming to compute the optimal global
-             alignment between two sequences. It builds a score matrix and a
-             traceback matrix to store the alignment path.
+    @details A função utiliza programação dinâmica para calcular o alinhamento global
+             ideal entre duas sequências. Cria uma matriz de pontuação e uma matriz de traceback
+             para armazenar o caminho do alinhamento.
     """
-    if not s1 or not s2:
-        raise ValueError("Input sequences cannot be empty")
+    if not seq1 or not seq2:
+        raise ValueError("As sequências de entrada não podem ser vazias")
         
     subst = Blosum62().subst
     
-    # Initialize score and trace matrices
-    score: List[List[int]] = [[0 for _ in range(len(s1) + 1)] for _ in range(len(s2) + 1)]
-    trace: List[List[str]] = [[' ' for _ in range(len(s1) + 1)] for _ in range(len(s2) + 1)]
+    # Inicializar as matrizes de pontuação e traceback
+    pontuacao: List[List[int]] = [[0 for _ in range(len(seq1) + 1)] for _ in range(len(seq2) + 1)]
+    traceback: List[List[str]] = [[' ' for _ in range(len(seq1) + 1)] for _ in range(len(seq2) + 1)]
     
-    # Initialize first row
-    for p in range(len(s1)):
-        score[0][p + 1] = score[0][p] + g
-        trace[0][p + 1] = 'E'
+    # Inicializar a primeira linha
+    for p in range(len(seq1)):
+        pontuacao[0][p + 1] = pontuacao[0][p] + gap
+        traceback[0][p + 1] = 'E'
     
-    # Initialize first column
-    for p in range(len(s2)):
-        score[p + 1][0] = score[p][0] + g
-        trace[p + 1][0] = 'C'
+    # Inicializar a primeira coluna
+    for p in range(len(seq2)):
+        pontuacao[p + 1][0] = pontuacao[p][0] + gap
+        traceback[p + 1][0] = 'C'
     
-    # Fill matrices
-    for p1, x1 in enumerate(s1):
-        for p2, x2 in enumerate(s2):
-            diagonal = score[p2][p1] + subst(x1, x2)
-            up = score[p2][p1 + 1] + g
-            left = score[p2 + 1][p1] + g
+    # Preencher as matrizes
+    for p1, x1 in enumerate(seq1):
+        for p2, x2 in enumerate(seq2):
+            diagonal = pontuacao[p2][p1] + subst(x1, x2)
+            acima = pontuacao[p2][p1 + 1] + gap
+            esquerda = pontuacao[p2 + 1][p1] + gap
             
-            score[p2 + 1][p1 + 1] = max(diagonal, up, left)
+            pontuacao[p2 + 1][p1 + 1] = max(diagonal, acima, esquerda)
             
-            if score[p2 + 1][p1 + 1] == diagonal:
-                trace[p2 + 1][p1 + 1] = 'D'
-            elif score[p2 + 1][p1 + 1] == up:
-                trace[p2 + 1][p1 + 1] = 'C'
+            if pontuacao[p2 + 1][p1 + 1] == diagonal:
+                traceback[p2 + 1][p1 + 1] = 'D'
+            elif pontuacao[p2 + 1][p1 + 1] == acima:
+                traceback[p2 + 1][p1 + 1] = 'C'
             else:
-                trace[p2 + 1][p1 + 1] = 'E'
+                traceback[p2 + 1][p1 + 1] = 'E'
     
-    return score, trace
+    return pontuacao, traceback
 
-def print_matrix(mat: List[List[int]]) -> None:
+def imprimir_matriz(matriz: List[List[int]]) -> None:
     """!
-    @brief Prints a score matrix in a formatted way.
+    @brief Imprime uma matriz de pontuação de forma formatada.
     
-    @param mat Score matrix to print
+    @param matriz Matriz de pontuação a ser impressa.
     """
-    for row in mat:
-        print(' '.join(f"{x:3d}" for x in row))
+    for linha in matriz:
+        print(' '.join(f"{x:3d}" for x in linha))
 
-def print_trace(mat: List[List[str]]) -> None:
+def imprimir_traceback(matriz: List[List[str]]) -> None:
     """!
-    @brief Prints a traceback matrix.
+    @brief Imprime uma matriz de traceback.
     
-    @param mat Traceback matrix to print
+    @param matriz Matriz de traceback a ser impressa.
     """
-    for row in mat:
-        print(' '.join(row))
+    for linha in matriz:
+        print(' '.join(linha))
 
-def get_alignment_score(s1: str, s2: str, g: int = -8) -> int:
+def obter_pontuacao_alinhamento(seq1: str, seq2: str, gap: int = -8) -> int:
     """!
-    @brief Calculates the final alignment score between two sequences.
+    @brief Calcula a pontuação final de alinhamento entre duas sequências.
     
-    @param s1 First sequence
-    @param s2 Second sequence
-    @param g Gap penalty (default: -8)
+    @param seq1 Primeira sequência.
+    @param seq2 Segunda sequência.
+    @param gap Penalização por gaps (valor predefinido: -8).
     
-    @return Final alignment score
+    @return Pontuação final de alinhamento.
     """
-    return align(s1, s2, g)[0][-1][-1]
+    return alinhar(seq1, seq2, gap)[0][-1][-1]
 
-def reconstruct_alignment(s1: str, s2: str, trace: List[List[str]]) -> Tuple[str, str]:
+def reconstruir_alinhamento(seq1: str, seq2: str, traceback: List[List[str]]) -> Tuple[str, str]:
     """!
-    @brief Reconstructs the alignment from the traceback matrix.
+    @brief Reconstrói o alinhamento a partir da matriz de traceback.
     
-    @param s1 First sequence
-    @param s2 Second sequence
-    @param trace Traceback matrix
+    @param seq1 Primeira sequência.
+    @param seq2 Segunda sequência.
+    @param traceback Matriz de traceback.
     
-    @return Tuple containing aligned sequences (aligned_s1, aligned_s2)
+    @return Tuplo contendo as sequências alinhadas (aligned_seq1, aligned_seq2).
     
-    @exception ValueError If traceback matrix contains invalid direction
+    @exception ValueError Se a matriz de traceback contiver direções inválidas.
     """
-    C, L = len(s1), len(s2)
-    aligned_s1, aligned_s2 = '', ''
+    C, L = len(seq1), len(seq2)
+    alinhada_seq1, alinhada_seq2 = '', ''
     
     while C > 0 or L > 0:
-        if trace[L][C] == 'D':
+        if traceback[L][C] == 'D':
             L -= 1
             C -= 1
-            aligned_s1 = s1[C] + aligned_s1
-            aligned_s2 = s2[L] + aligned_s2
-        elif trace[L][C] == 'E':
+            alinhada_seq1 = seq1[C] + alinhada_seq1
+            alinhada_seq2 = seq2[L] + alinhada_seq2
+        elif traceback[L][C] == 'E':
             C -= 1
-            aligned_s1 = s1[C] + aligned_s1
-            aligned_s2 = '-' + aligned_s2
-        elif trace[L][C] == 'C':
+            alinhada_seq1 = seq1[C] + alinhada_seq1
+            alinhada_seq2 = '-' + alinhada_seq2
+        elif traceback[L][C] == 'C':
             L -= 1
-            aligned_s1 = '-' + aligned_s1
-            aligned_s2 = s2[L] + aligned_s2
+            alinhada_seq1 = '-' + alinhada_seq1
+            alinhada_seq2 = seq2[L] + alinhada_seq2
         else:
-            raise ValueError(f"Invalid direction '{trace[L][C]}' in traceback matrix")
+            raise ValueError(f"Direção inválida '{traceback[L][C]}' na matriz de traceback")
     
-    return aligned_s1, aligned_s2
+    return alinhada_seq1, alinhada_seq2
 
 if __name__ == "__main__":
-    # Example usage
-    s1, s2 = "HGWAG", "PHSWG"
-    score_matrix, trace_matrix = align(s1, s2)
-    print("Score matrix:")
-    print_matrix(score_matrix)
-    print("\nTrace matrix:")
-    print_trace(trace_matrix)
-    aligned_s1, aligned_s2 = reconstruct_alignment(s1, s2, trace_matrix)
-    print("\nAlignment:")
-    print(aligned_s1)
-    print(aligned_s2)
+    # Exemplo de utilização
+    seq1, seq2 = "HGWAG", "PHSWG"
+    matriz_pontuacao, matriz_traceback = alinhar(seq1, seq2)
+    print("Matriz de Pontuação:")
+    imprimir_matriz(matriz_pontuacao)
+    print("\nMatriz de Traceback:")
+    imprimir_traceback(matriz_traceback)
+    alinhada_seq1, alinhada_seq2 = reconstruir_alinhamento(seq1, seq2, matriz_traceback)
+    print("\nAlinhamento:")
+    print(alinhada_seq1)
+    print(alinhada_seq2)
