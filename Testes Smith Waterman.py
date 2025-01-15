@@ -1,39 +1,40 @@
 import unittest
 
 class TestSmithWaterman(unittest.TestCase):
-    def test_basic_alignment(self):
-        seq1 = "GATTACA"
-        seq2 = "GCATGCU"
-        match = 2
-        mismatch = -1
-        gap = -2
 
-        expected_score = 2
-        expected_seq1 = "G"
-        expected_seq2 = "G"
+    def setUp(self):
+        self.scoring_matrix = [
+            [2, -1, -1, -1],
+            [-1, 2, -1, -1],
+            [-1, -1, 2, -1],
+            [-1, -1, -1, 2]
+        ]
+        self.g = -2
 
-        score, aligned_seq1, aligned_seq2 = smith_waterman(seq1, seq2, match, mismatch, gap)
-        
-        self.assertEqual(score, expected_score)
-        self.assertEqual(aligned_seq1, expected_seq1)
-        self.assertEqual(aligned_seq2, expected_seq2)
+    def test_SW(self):
+        seq1 = "AGT"
+        seq2 = "AGT"
+        score, trace = SW(seq1, seq2, self.scoring_matrix, self.g)
+        self.assertEqual(score[1][1], 2)
+        self.assertEqual(score[2][2], 4)
+        self.assertEqual(trace[1][1], 'D')
+        self.assertEqual(trace[2][2], 'D')
 
-    def test_full_alignment(self):
-        seq1 = "ACACACTA"
-        seq2 = "AGCACACA"
-        match = 2
-        mismatch = -1
-        gap = -2
+    def test_score_SW(self):
+        seq1 = "AGT"
+        seq2 = "AGT"
+        score, _ = SW(seq1, seq2, self.scoring_matrix, self.g)
+        max_score = score_SW(score)
+        self.assertEqual(max_score, 4)
 
-        expected_score = 10
-        expected_seq1 = "ACACACTA"
-        expected_seq2 = "A-CACACA"
+    def test_reconstruct_SW(self):
+        seq1 = "AGT"
+        seq2 = "AGT"
+        score, trace = SW(seq1, seq2, self.scoring_matrix, self.g)
+        alinhamento_seq1, alinhamento_seq2 = reconstruct_SW(seq1, seq2, score, trace)
+        self.assertEqual(alinhamento_seq1, "AGT")
+        self.assertEqual(alinhamento_seq2, "AGT")
 
-        score, aligned_seq1, aligned_seq2 = smith_waterman(seq1, seq2, match, mismatch, gap)
-        
-        self.assertEqual(score, expected_score)
-        self.assertEqual(aligned_seq1, expected_seq1)
-        self.assertEqual(aligned_seq2, expected_seq2)
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()
+
