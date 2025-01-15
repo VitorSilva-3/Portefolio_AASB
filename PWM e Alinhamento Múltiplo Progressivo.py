@@ -1,3 +1,4 @@
+
 from typing import List, Tuple
 
 def alinhamento(seq1: str, seq2: str) -> Tuple[str, str]:
@@ -14,23 +15,19 @@ def alinhamento(seq1: str, seq2: str) -> Tuple[str, str]:
     if not seq1 or not seq2:
         raise ValueError("As sequências não podem estar vazias")
 
-    # Inicialização de parâmetros
     correspondencia: int = 1
     nao_correspondencia: int = -1
     penalizacao_lacuna: int = -1
 
-    # Criação da matriz de pontuação
     n: int = len(seq1) + 1
     m: int = len(seq2) + 1
     matriz_pontuacao: List[List[int]] = [[0] * m for _ in range(n)]
 
-    # Inicialização das bordas
     for i in range(n):
         matriz_pontuacao[i][0] = i * penalizacao_lacuna
     for j in range(m):
         matriz_pontuacao[0][j] = j * penalizacao_lacuna
 
-    # Preenchimento da matriz
     for i in range(1, n):
         for j in range(1, m):
             pontuacao_correspondencia: int = correspondencia if seq1[i - 1] == seq2[j - 1] else nao_correspondencia
@@ -40,7 +37,6 @@ def alinhamento(seq1: str, seq2: str) -> Tuple[str, str]:
                 matriz_pontuacao[i][j - 1] + penalizacao_lacuna,
             )
 
-    # Traçado de volta para obter alinhamento
     seq1_alinhada: str = ""
     seq2_alinhada: str = ""
     i, j = len(seq1), len(seq2)
@@ -83,7 +79,7 @@ def consenso(seq1: str, seq2: str) -> str:
         elif a == "-" or b == "-":
             consenso_lista.append("-")
         else:
-            consenso_lista.append("N")  # Representa conflito
+            consenso_lista.append("N") 
     return "".join(consenso_lista)
 
 def alinhamento_progressivo(sequencias: List[str]) -> List[str]:
@@ -99,21 +95,16 @@ def alinhamento_progressivo(sequencias: List[str]) -> List[str]:
     if len(sequencias) < 2:
         return sequencias
 
-    # Alinhar as duas primeiras sequências
     seq1_alinhada, seq2_alinhada = alinhamento(sequencias[0], sequencias[1])
     alinhamento_multiplo: List[str] = [seq1_alinhada, seq2_alinhada]
 
-    # Alinhar progressivamente as sequências restantes
     for i in range(2, len(sequencias)):
-        # Calcular o consenso atual
         consenso_atual: str = consenso(alinhamento_multiplo[0], alinhamento_multiplo[1])
         for seq in alinhamento_multiplo[2:]:
             consenso_atual = consenso(consenso_atual, seq)
 
-        # Alinhar o consenso com a nova sequência
         consenso_alinhado, nova_seq_alinhada = alinhamento(consenso_atual, sequencias[i])
 
-        # Atualizar o alinhamento múltiplo
         for j in range(len(alinhamento_multiplo)):
             seq_atualizada: str = ""
             seq_alinhada: str = alinhamento_multiplo[j]
@@ -128,7 +119,6 @@ def alinhamento_progressivo(sequencias: List[str]) -> List[str]:
 
             alinhamento_multiplo[j] = seq_atualizada
 
-        # Adicionar a nova sequência alinhada
         alinhamento_multiplo.append(nova_seq_alinhada)
 
-    return alinhamento_multiplo
+    return alinhamento_multiplo 
