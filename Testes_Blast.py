@@ -28,7 +28,7 @@ class TestSequenceAnalysis(unittest.TestCase):
         seq = "AATATGTTATATAATAATATTT"
         hit = (0, 0)
         result = extend_hit_direction(query, seq, hit, 3, 1)
-        expected = (0, 0, 5, 5)  # Ajuste conforme necessário
+        expected = (0, 0, 5, 5)  
         self.assertEqual(result, expected)
 
 if __name__ == "__main__":
