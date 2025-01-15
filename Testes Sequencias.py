@@ -52,4 +52,4 @@ class TestDNAFunctions(unittest.TestCase):
         self.assertEqual(obter_orfs("ATGAAATAG"), [['ATG', 'AAA', 'TAG'], ['TGA', 'AAT'], ['GAA', 'ATA'], ['CTA', 'TTT', 'CAT'], ['TAT', 'TTC'], ['ATT', 'TCA']])
 
 if __name__ == "__main__":
-    unittest.main(argv=[''], exit=False)
+    unittest.main()
