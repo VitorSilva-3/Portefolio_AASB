@@ -15,14 +15,14 @@ def SW(seq1: str, seq2: str, scoring_matrix: List[List[int]], g: int) -> Tuple[L
     
     @details O algoritmo Smith-Waterman realiza o alinhamento local entre duas sequências com base em uma matriz de pontuação e penalidade de gap. A matriz de rastreamento é usada para reconstruir o alinhamento após o cálculo das pontuações.
     """
-    # Adição de gap ao início da sequência
+    # Adicionar gap no início da sequência
     seq1 = "-" + seq1
     seq2 = "-" + seq2
 
     n_lins = len(seq1)
     n_cols = len(seq2)
 
-    # Construção das matrizes score e trace de tamanho (n_lins x n_cols)
+    # Construção das matrizes score e trace 
     score = [[0] * (n_cols) for _ in range(n_lins)]
     trace = [[''] * (n_cols) for _ in range(n_lins)]
 
