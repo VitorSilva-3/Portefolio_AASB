@@ -1,4 +1,3 @@
-# Testes Unitários para sequências de DNA
 import unittest
 
 class TesteAlgoritmoDNA(unittest.TestCase):
