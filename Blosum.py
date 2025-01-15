@@ -40,7 +40,7 @@ class Blosum62:
         - -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4  1
         """
 
-        linhas = [linha.split() for linha in tabela.splitlines() if linha]
+        linhas = [linha.split() for linha in tabela.splitlines() if linha.strip()]
 
         cabecalhos, *resto = linhas
 
