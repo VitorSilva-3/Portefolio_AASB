@@ -33,7 +33,7 @@ def SW(seq1: str, seq2: str, scoring_matrix: List[List[int]], g: int) -> Tuple[L
             E = score[L][C - 1] + g                                            # Esquerda == gap em seq1
             A = score[L - 1][C] + g                                            # Ascendente == gap em seq2
 
-            # Escolha do melhor score e preenche matriz score
+            
             direcao_final = max(D, E, A, 0)     # 0 (não há valores negativos)
             score[L][C] = direcao_final
 
