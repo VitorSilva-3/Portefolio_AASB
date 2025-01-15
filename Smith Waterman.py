@@ -1,61 +1,114 @@
-import numpy as np
-from typing import Tuple
+from typing import List, Tuple
 
-def smith_waterman(seq1: str, seq2: str, match: int = 2, mismatch: int = -1, gap: int = -2) -> Tuple[int, str, str]:
+def SW(seq1: str, seq2: str, scoring_matrix: List[List[int]], g: int) -> Tuple[List[List[int]], List[List[str]]]:
     """
-    @brief Implementa o algoritmo Smith-Waterman para o alinhamento local de sequências.
+    @brief Implementa o algoritmo Smith-Waterman para alinhamento local.
+    
+    @param seq1 A primeira sequência a ser alinhada.
+    @param seq2 A segunda sequência a ser alinhada.
+    @param scoring_matrix Matriz de pontuação para alinhamento de bases.
+    @param g A penalidade de gap.
 
-    @param seq1 Primeira sequência (string) a alinhar.
-    @param seq2 Segunda sequência (string) a alinhar.
-    @param match Pontuação para correspondência de caracteres (valor inteiro, padrão 2).
-    @param mismatch Penalidade para caracteres diferentes (valor inteiro, padrão -1).
-    @param gap Penalidade para introdução de gaps (valor inteiro, padrão -2).
-
-    @return Uma tupla contendo:
-        - A pontuação máxima do alinhamento local (int).
-        - A sequência alinhada derivada de seq1 (str).
-        - A sequência alinhada derivada de seq2 (str).
-
-    @details Este algoritmo constrói uma matriz de pontuação e utiliza backtracking para encontrar o alinhamento local ótimo entre as duas sequências fornecidas.
+    @return Uma tupla contendo duas matrizes:
+        - A matriz de pontuação (score), que contém os valores de pontuação de cada célula.
+        - A matriz de rastreamento (trace), que indica a direção do melhor caminho para reconstrução do alinhamento.
+    
+    @details O algoritmo Smith-Waterman realiza o alinhamento local entre duas sequências com base em uma matriz de pontuação e penalidade de gap. A matriz de rastreamento é usada para reconstruir o alinhamento após o cálculo das pontuações.
     """
-    m, n = len(seq1), len(seq2)
-    matriz = np.zeros((m+1, n+1), dtype=int)
-    score_maximo = 0
-    max_pos = None
+    # Adição de gap ao início da sequência
+    seq1 = "-" + seq1
+    seq2 = "-" + seq2
+    
+    # Definir número de linhas e colunas em nossa matriz 
+    n_lins = len(seq1)
+    n_cols = len(seq2)
 
-    for i in range(1, m+1):
-        for j in range(1, n+1):
-            match_score = match if seq1[i-1] == seq2[j-1] else mismatch
-            matriz[i, j] = max(
-                0,
-                matriz[i-1, j-1] + match_score,  
-                matriz[i-1, j] + gap,           
-                matriz[i, j-1] + gap            
-            )
-            if matriz[i, j] > score_maximo:
-                score_maximo = matriz[i, j]
-                max_pos = (i, j)
+    # Construção das matrizes score e trace de tamanho (n_lins x n_cols)
+    score = [[0] * (n_cols) for _ in range(n_lins)]
+    trace = [[''] * (n_cols) for _ in range(n_lins)]
 
-    seq1_alinhada = []
-    seq2_alinhada = []
-    i, j = max_pos
+    # Preenchimento da matriz score
+    for L in range(1, n_lins):
+        for C in range(1, n_cols):
+            # Cálculo dos scores diagonal, esquerda, e ascendente
+            D = score[L - 1][C - 1] + subst(scoring_matrix, seq1[C], seq2[L])  # Diagonal
+            E = score[L][C - 1] + g                                            # Esquerda == gap em seq1
+            A = score[L - 1][C] + g                                            # Ascendente == gap em seq2
 
-    while matriz[i, j] > 0:
-        if matriz[i, j] == matriz[i-1, j-1] + (match if seq1[i-1] == seq2[j-1] else mismatch):
-            seq1_alinhada.append(seq1[i-1])
-            seq2_alinhada.append(seq2[j-1])
-            i -= 1
-            j -= 1
-        elif matriz[i, j] == matriz[i-1, j] + gap:  
-            seq1_alinhada.append(seq1[i-1])
-            seq2_alinhada.append('-')
-            i -= 1
-        elif matriz[i, j] == matriz[i, j-1] + gap:  
-            seq1_alinhada.append('-')
-            seq2_alinhada.append(seq2[j-1])
-            j -= 1
+            # Escolha do melhor score e preenchimento da matriz score
+            direcao_final = max(D, E, A, 0)     # 0 impede valores negativos
+            score[L][C] = direcao_final
 
-    seq1_alinhada = "".join(reversed(seq1_alinhada))
-    seq2_alinhada = "".join(reversed(seq2_alinhada))
+            # Preenchimento da matriz trace
+            if direcao_final == D:
+                trace[L][C] = "D"
+            elif direcao_final == E:
+                trace[L][C] = "E"
+            elif direcao_final == A:
+                trace[L][C] = "A"
+            elif direcao_final == 0:
+                trace[L][C] = ""
+            else:
+                raise ValueError(f"Unexpected trace value at L={L}, C={C}: {trace[L][C]}")  # Handle unexpected cases
 
-    return score_maximo, seq1_alinhada, seq2_alinhada
+    return score, trace
+
+def score_SW(score: List[List[int]]) -> int:
+    """
+    @brief Retorna o valor de score máximo da matriz Smith-Waterman.
+    
+    @param score A matriz de pontuação gerada pelo algoritmo Smith-Waterman.
+
+    @return O valor máximo encontrado na matriz de pontuação.
+    
+    @details A função percorre toda a matriz de pontuação e retorna o valor máximo, que corresponde ao alinhamento local mais forte entre as duas sequências.
+    """
+    max_value = max(max(row) for row in score)
+    return max_value
+
+def reconstruct_SW(seq1: str, seq2: str, score: List[List[int]], trace: List[List[str]]) -> Tuple[str, str]:
+    """
+    @brief Reconstrói os alinhamentos baseando-se nas matrizes geradas pelo algoritmo Smith-Waterman.
+    
+    @param seq1 A primeira sequência a ser alinhada.
+    @param seq2 A segunda sequência a ser alinhada.
+    @param score A matriz de pontuação gerada pelo algoritmo.
+    @param trace A matriz de rastreamento gerada pelo algoritmo.
+
+    @return Um tupla contendo as duas sequências alinhadas.
+    
+    @details A função realiza o backtracking na matriz de rastreamento para reconstruir o alinhamento local ótimo entre as duas sequências.
+    """
+    indices = []
+    maximo = score_SW(score)             
+    for i in range(len(score)):
+        for j in range(len(score[i])):
+            if score[i][j] == maximo:
+                indices.append((i, j))
+    
+    # Associa a posição inicial para reconstrução ao/s máximo/s da matriz
+    alinhamento_seq1 = ''
+    alinhamento_seq2 = ''
+    
+    for pos_max in indices:
+        L, C = pos_max
+
+        # Reconstrução do alinhamento
+        while C > 0 or L > 0:
+            if trace[L][C] == 'D':
+                L -= 1
+                C -= 1
+                alinhamento_seq1 = seq1[C] + alinhamento_seq1
+                alinhamento_seq2 = seq2[L] + alinhamento_seq2
+            elif trace[L][C] == 'E':
+                C -= 1
+                alinhamento_seq1 = seq1[C] + alinhamento_seq1
+                alinhamento_seq2 = '-' + alinhamento_seq2
+            elif trace[L][C] == 'A':
+                L -= 1
+                alinhamento_seq1 = '-' + alinhamento_seq1
+                alinhamento_seq2 = seq2[L] + alinhamento_seq2
+            elif trace[L][C] == '':    # Garante que a reconstrução termina em 0
+                break
+
+    return alinhamento_seq1, alinhamento_seq2
