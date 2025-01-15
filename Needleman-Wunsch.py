@@ -31,21 +31,17 @@ def alinhar(seq1: str, seq2: str, gap: int = -8) -> Tuple[List[List[int]], List[
         
     subst = Blosum62().subst
     
-    # Inicializar as matrizes de pontuação e traceback
     pontuacao: List[List[int]] = [[0 for _ in range(len(seq1) + 1)] for _ in range(len(seq2) + 1)]
     traceback: List[List[str]] = [[' ' for _ in range(len(seq1) + 1)] for _ in range(len(seq2) + 1)]
     
-    # Inicializar a primeira linha
     for p in range(len(seq1)):
         pontuacao[0][p + 1] = pontuacao[0][p] + gap
         traceback[0][p + 1] = 'E'
     
-    # Inicializar a primeira coluna
     for p in range(len(seq2)):
         pontuacao[p + 1][0] = pontuacao[p][0] + gap
         traceback[p + 1][0] = 'C'
     
-    # Preencher as matrizes
     for p1, x1 in enumerate(seq1):
         for p2, x2 in enumerate(seq2):
             diagonal = pontuacao[p2][p1] + subst(x1, x2)
@@ -128,7 +124,6 @@ def reconstruir_alinhamento(seq1: str, seq2: str, traceback: List[List[str]]) ->
     return alinhada_seq1, alinhada_seq2
 
 if __name__ == "__main__":
-    # Exemplo de utilização
     seq1, seq2 = "HGWAG", "PHSWG"
     matriz_pontuacao, matriz_traceback = alinhar(seq1, seq2)
     print("Matriz de Pontuação:")
