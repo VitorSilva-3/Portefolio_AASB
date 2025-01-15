@@ -1,5 +1,5 @@
 /**
- * @brief Calcula a distância de edição entre duas sequências.
+ @brief Calcula a distância de edição entre duas sequências.
  *
  * @param s1 Primeira sequência.
  * @param s2 Segunda sequência.
