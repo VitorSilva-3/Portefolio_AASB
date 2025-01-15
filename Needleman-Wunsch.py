@@ -1,5 +1,5 @@
 from typing import List, Tuple
-from blosum import Blosum62
+from Blosum import Blosum62
 
 ## @package alinhamento_sequencias
 #  @brief Módulo para alinhamento de sequências utilizando a matriz de substituição Blosum62.
@@ -29,7 +29,7 @@ def alinhar(seq1: str, seq2: str, gap: int = -8) -> Tuple[List[List[int]], List[
     if not seq1 or not seq2:
         raise ValueError("As sequências de entrada não podem ser vazias")
         
-    subst = Blosum62().subst
+    subst = Blosum62().substituicao
     
     pontuacao: List[List[int]] = [[0 for _ in range(len(seq1) + 1)] for _ in range(len(seq2) + 1)]
     traceback: List[List[str]] = [[' ' for _ in range(len(seq1) + 1)] for _ in range(len(seq2) + 1)]
