@@ -1,20 +1,20 @@
+from typing import List, Dict, Tuple
 
- # @brief Calcula a distância de edição entre duas sequências.
- # @param s1 Primeira sequência.
- # @param s2 Segunda sequência.
- # @return int Distância de edição entre s1 e s2.
- 
+
 def calcular_distancia(s1: str, s2: str) -> int:
-    # Criar a matriz de distâncias
+    """
+    @brief Calcula a distância de edição entre duas sequências.
+    @param s1 Primeira sequência.
+    @param s2 Segunda sequência.
+    @return Distância de edição entre s1 e s2.
+    """
     mat = [[0] * (len(s2) + 1) for _ in range(len(s1) + 1)]
 
-    # Inicializar as margens da matriz
     for i in range(len(s1) + 1):
         mat[i][0] = i
     for j in range(len(s2) + 1):
         mat[0][j] = j
 
-    # Preencher a matriz utilizando a fórmula da distância
     for i, char_s1 in enumerate(s1, 1):
         for j, char_s2 in enumerate(s2, 1):
             custo = 0 if char_s1 == char_s2 else 1
@@ -27,30 +27,29 @@ def calcular_distancia(s1: str, s2: str) -> int:
     return mat[-1][-1]
 
 
- # @brief Gera uma matriz de distâncias para um conjunto de sequências.
- # @param sequencias Lista de sequências.
- # @return dict Matriz de distâncias entre todas as sequências.
- 
-def gerar_matriz_distancias(sequencias: list[str]) -> dict[str, dict[str, int]]:
-    # Criar um dicionário para armazenar as distâncias
+def gerar_matriz_distancias(sequencias: List[str]) -> Dict[str, Dict[str, int]]:
+    """
+    @brief Gera uma matriz de distâncias para um conjunto de sequências.
+    @param sequencias Lista de sequências.
+    @return Matriz de distâncias entre todas as sequências.
+    """
     distancias = {}
     for s1 in sequencias:
         distancias[s1] = {}
         for s2 in sequencias:
-            if s1 != s2 and s2 not in distancias:
+            if s1 != s2:
                 distancia = calcular_distancia(s1, s2)
                 distancias[s1][s2] = distancia
                 distancias.setdefault(s2, {})[s1] = distancia
-
     return distancias
 
 
- # @brief Encontra o par de sequências com a menor distância na matriz.
- # @param matriz_distancias Matriz de distâncias.
- # @return tuple Par de sequências com a menor distância e o valor da distância.
- 
-def encontrar_par_minimo(matriz_distancias: dict[str, dict[str, int]]) -> tuple[tuple[str, str], int]:
-    # Encontrar o par com a menor distância
+def encontrar_par_minimo(matriz_distancias: Dict[str, Dict[str, int]]) -> Tuple[Tuple[str, str], int]:
+    """
+    @brief Encontra o par de sequências com a menor distância na matriz.
+    @param matriz_distancias Matriz de distâncias.
+    @return Par de sequências com a menor distância e o valor da distância.
+    """
     menor_distancia = float('inf')
     menor_par = None
 
@@ -63,25 +62,26 @@ def encontrar_par_minimo(matriz_distancias: dict[str, dict[str, int]]) -> tuple[
     return menor_par, menor_distancia
 
 
- # @brief Atualiza a matriz de distâncias ao fundir dois clusters.
- # @param matriz_distancias Matriz de distâncias.
- # @param par Par de sequências a fundir.
- # @return dict Matriz de distâncias atualizada.
- 
-def atualizar_distancias(matriz_distancias: dict[str, dict[str, float]], par: tuple[str, str]) -> dict[str, dict[str, float]]:
+def atualizar_distancias(
+    matriz_distancias: Dict[str, Dict[str, float]], par: Tuple[str, str]
+) -> Dict[str, Dict[str, float]]:
+    """
+    @brief Atualiza a matriz de distâncias ao fundir dois clusters.
+    @param matriz_distancias Matriz de distâncias.
+    @param par Par de sequências a fundir.
+    @return Matriz de distâncias atualizada.
+    """
     s1, s2 = par
-
-    # Criar um novo cluster a partir de s1 e s2
-    novo_cluster = (s1, s2)
+    novo_cluster = f"({s1},{s2})"
     matriz_distancias[novo_cluster] = {}
 
-    for seq, dist in list(matriz_distancias.items()):
+    for seq in list(matriz_distancias.keys()):
         if seq not in par:
-            nova_distancia = (matriz_distancias[s1][seq] + matriz_distancias[s2][seq]) / 2
-            matriz_distancias[novo_cluster][seq] = nova_distancia
-            matriz_distancias[seq][novo_cluster] = nova_distancia
+            if seq in matriz_distancias[s1] and seq in matriz_distancias[s2]:
+                nova_distancia = (matriz_distancias[s1][seq] + matriz_distancias[s2][seq]) / 2
+                matriz_distancias[novo_cluster][seq] = nova_distancia
+                matriz_distancias[seq][novo_cluster] = nova_distancia
 
-    # Remover s1 e s2 da matriz
     for seq in par:
         matriz_distancias.pop(seq, None)
         for valores in matriz_distancias.values():
@@ -90,11 +90,12 @@ def atualizar_distancias(matriz_distancias: dict[str, dict[str, float]], par: tu
     return matriz_distancias
 
 
- # @brief Constrói uma árvore filogenética a partir de um conjunto de sequências.
- # @param sequencias Lista de sequências.
- # @return tuple Árvore filogenética representada como um cluster hierárquico.
- 
-def construir_arvore(sequencias: list[str]) -> tuple:
+def construir_arvore(sequencias: List[str]) -> str:
+    """
+    @brief Constrói uma árvore filogenética a partir de um conjunto de sequências.
+    @param sequencias Lista de sequências.
+    @return Árvore filogenética representada como um cluster hierárquico.
+    """
     matriz_distancias = gerar_matriz_distancias(sequencias)
 
     while len(matriz_distancias) > 1:
@@ -102,6 +103,7 @@ def construir_arvore(sequencias: list[str]) -> tuple:
         matriz_distancias = atualizar_distancias(matriz_distancias, par_minimo)
 
     return list(matriz_distancias.keys())[0]
+
 
 if __name__ == '__main__':
     from pprint import pprint
