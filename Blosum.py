@@ -44,7 +44,6 @@ class Blosum62:
 
         cabecalhos, *resto = linhas
 
-        # Construir a tabela como um dicionário de dicionários
         from collections import defaultdict
         tab = defaultdict(dict)
         for linha in resto:
