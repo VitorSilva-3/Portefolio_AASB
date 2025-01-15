@@ -1,5 +1,5 @@
 import unittest
-from sequence_analysis import query_map, get_all_positions, hits, extend_hit_direction
+from Blast import query_map, get_all_positions, hits, extend_hit_direction
 
 class TestSequenceAnalysis(unittest.TestCase):
     def test_query_map(self):
