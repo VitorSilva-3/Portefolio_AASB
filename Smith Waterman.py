@@ -23,21 +23,19 @@ def smith_waterman(seq1: str, seq2: str, match: int = 2, mismatch: int = -1, gap
     score_maximo = 0
     max_pos = None
 
-    # Construção da matriz de pontuação
     for i in range(1, m+1):
         for j in range(1, n+1):
             match_score = match if seq1[i-1] == seq2[j-1] else mismatch
             matriz[i, j] = max(
                 0,
-                matriz[i-1, j-1] + match_score,  # Diagonal (match/mismatch)
-                matriz[i-1, j] + gap,           # Gap na seq2
-                matriz[i, j-1] + gap            # Gap na seq1
+                matriz[i-1, j-1] + match_score,  
+                matriz[i-1, j] + gap,           
+                matriz[i, j-1] + gap            
             )
             if matriz[i, j] > score_maximo:
                 score_maximo = matriz[i, j]
                 max_pos = (i, j)
 
-    # Backtracking para reconstruir o alinhamento
     seq1_alinhada = []
     seq2_alinhada = []
     i, j = max_pos
@@ -48,11 +46,11 @@ def smith_waterman(seq1: str, seq2: str, match: int = 2, mismatch: int = -1, gap
             seq2_alinhada.append(seq2[j-1])
             i -= 1
             j -= 1
-        elif matriz[i, j] == matriz[i-1, j] + gap:  # Gap na seq2
+        elif matriz[i, j] == matriz[i-1, j] + gap:  
             seq1_alinhada.append(seq1[i-1])
             seq2_alinhada.append('-')
             i -= 1
-        elif matriz[i, j] == matriz[i, j-1] + gap:  # Gap na seq1
+        elif matriz[i, j] == matriz[i, j-1] + gap:  
             seq1_alinhada.append('-')
             seq2_alinhada.append(seq2[j-1])
             j -= 1
@@ -61,4 +59,3 @@ def smith_waterman(seq1: str, seq2: str, match: int = 2, mismatch: int = -1, gap
     seq2_alinhada = "".join(reversed(seq2_alinhada))
 
     return score_maximo, seq1_alinhada, seq2_alinhada
-
