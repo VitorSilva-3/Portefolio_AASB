@@ -18,8 +18,7 @@ def SW(seq1: str, seq2: str, scoring_matrix: List[List[int]], g: int) -> Tuple[L
     # Adição de gap ao início da sequência
     seq1 = "-" + seq1
     seq2 = "-" + seq2
-    
-    # Definir número de linhas e colunas em nossa matriz 
+
     n_lins = len(seq1)
     n_cols = len(seq2)
 
@@ -30,13 +29,12 @@ def SW(seq1: str, seq2: str, scoring_matrix: List[List[int]], g: int) -> Tuple[L
     # Preenchimento da matriz score
     for L in range(1, n_lins):
         for C in range(1, n_cols):
-            # Cálculo dos scores diagonal, esquerda, e ascendente
             D = score[L - 1][C - 1] + subst(scoring_matrix, seq1[C], seq2[L])  # Diagonal
             E = score[L][C - 1] + g                                            # Esquerda == gap em seq1
             A = score[L - 1][C] + g                                            # Ascendente == gap em seq2
 
-            # Escolha do melhor score e preenchimento da matriz score
-            direcao_final = max(D, E, A, 0)     # 0 impede valores negativos
+            # Escolha do melhor score e preenche matriz score
+            direcao_final = max(D, E, A, 0)     # 0 (não há valores negativos)
             score[L][C] = direcao_final
 
             # Preenchimento da matriz trace
